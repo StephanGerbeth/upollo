@@ -1,0 +1,19 @@
+{
+  "presets": [
+    [
+      "@nuxt/babel-preset-app",
+      {}
+    ],
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "usage",
+        "modules": false,
+        "debug": false
+      }
+    ]
+  ],
+  "plugins": [
+    "@babel/plugin-transform-runtime"
+  ]
+}
