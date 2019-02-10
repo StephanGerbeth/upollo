@@ -110,3 +110,7 @@ npm i selenium-standalone -g
 - [ ] disabled noindex, nofollow on normal pages
 - [ ] enabled noindex, nofollow on auth area pages
 - [ ] no launch on friday
+
+RESOURCES
+- https://opensky-network.org/datasets/metadata/
+- https://datahub.io/core/airport-codes

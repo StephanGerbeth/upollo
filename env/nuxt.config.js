@@ -81,7 +81,7 @@ module.exports = {
       lang: 'de'
     }],
     ['nuxt-fire', {
-      useOnly: ['auth'],
+      useOnly: ['auth', 'realtimeDb'],
       config: {
         development: {
           apiKey: 'AIzaSyBrKX_6Ikfe_37mSoPQ7VhWabdIaZSZUp0',
