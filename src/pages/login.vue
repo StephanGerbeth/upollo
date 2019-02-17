@@ -16,6 +16,7 @@
     <google-auth />
     <auto-complete :service="getAirports()" />
     <auto-complete :service="getAircrafts()" />
+    <range-slider-circle />
   </div>
 </template>
 
@@ -23,11 +24,13 @@
 import { airports, aircrafts } from '@/service/firebase';
 import GoogleAuth from '@/components/atoms/auth/Google';
 import AutoComplete from '@/components/atoms/input/AutoComplete';
+import RangeSliderCircle from '@/components/atoms/input/RangeSliderCircle';
 
 export default {
   components: {
     GoogleAuth,
-    AutoComplete
+    AutoComplete,
+    RangeSliderCircle
   },
   head () {
     return {

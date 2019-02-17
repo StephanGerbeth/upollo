@@ -90,6 +90,7 @@
     "webpack-virtual-modules": "0.1.10"
   },
   "dependencies": {
+    "@js-basics/vector": "^1.21.0",
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/pwa": "^2.6.0",
     "default-passive-events": "^1.0.10",
@@ -100,6 +101,7 @@
     "nuxt-i18n": "^5.8.0",
     "nuxt-validate": "^0.1.2",
     "object-fit-images": "github:StephanGerbeth/object-fit-images",
+    "pepjs": "^0.4.3",
     "rxjs": "^6.4.0"
   },
   "repository": {

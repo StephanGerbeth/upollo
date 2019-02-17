@@ -44,7 +44,8 @@ module.exports = {
   },
 
   plugins: [
-    { src: '@/plugins/intersectionObserver' }
+    { src: '@/plugins/intersectionObserver' },
+    { src: '@/plugins/touch', ssr: false }
   ],
 
   modules: [

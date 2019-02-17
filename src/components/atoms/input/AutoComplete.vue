@@ -8,6 +8,9 @@
       @keydown.up="onArrowUp"
       @keydown.enter="onEnter"
     >
+    <span v-show="loading">
+      loading ...
+    </span>
     <ul
       v-show="open"
       class="results"
@@ -33,10 +36,7 @@ export default {
       type: Number,
       default: 10
     },
-    filterKey: {
-      type: String,
-      default: 'ident'
-    },
+
     service: {
       type: Function,
       default: function () {
@@ -48,6 +48,7 @@ export default {
     return {
       search: '',
       results: [],
+      loading: false,
       open: false,
       index: -1
     };
@@ -63,7 +64,9 @@ export default {
     onChange () {
       this.open = true;
       this.index = -1;
+      this.loading = true;
       this.service(this.search.split(' | ')[0], this.max).then((results) => {
+        this.loading = false;
         this.results = results;
       });
     },
