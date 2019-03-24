@@ -1,19 +1,27 @@
 import { fromEvent } from 'rxjs';
+import { startWith, map, share } from 'rxjs/operators';
+import verge from 'verge';
+import { Victor } from '@js-basics/vector';
 
 const observer = new Map();
-const pos = { x: 0, y: 0 };
+let lastPosition = new Victor(verge.scrollX(), verge.scrollY());
 
-export function subscribeToScroll(fn, el = global) {
+export function getScrollObserver (el = global) {
   if (!observer.has(el)) {
     observer.set(el, fromEvent(el, 'scroll'));
   }
-  return observer.get(el).subscribe(fn);
-}
-
-export function getScrollPos(el = global) {
-  const w = global;
-  const e = global.document.documentElement;
-  pos.x = el.scrollLeft || w.pageXOffset || e.scrollLeft;
-  pos.y = el.scrollTop || w.pageYOffset || e.scrollTop;
-  return pos;
+  return observer.get(el)
+    .pipe(
+      startWith(0),
+      map(() => {
+        let position = new Victor(verge.scrollX(), verge.scrollY());
+        let direction = new Victor(() => (position - lastPosition) / Math.abs(position - lastPosition));
+        lastPosition = position;
+        return {
+          position,
+          direction
+        };
+      }),
+      share()
+    );
 }

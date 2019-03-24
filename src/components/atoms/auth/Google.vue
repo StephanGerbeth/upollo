@@ -3,32 +3,58 @@
     href="#"
     @click="createUser"
   >
-    Google Sign In
+    <span v-show="!auth">
+      Google Login
+    </span>
+    <span v-show="auth">
+      <img :src="image"><span>Google Logout</span>
+    </span>
+    <span v-show="idle">
+      checking ...
+    </span>
+    <span>{{ name }}</span>
   </a>
 </template>
 
 <script>
-import firebase from 'firebase';
+import { authorize, unauthorize, observer, user } from '@/service/firebase/auth';
 
 export default {
+
+  data () {
+    return {
+      user: user,
+      idle: true
+    };
+  },
+
+  computed: {
+    name () {
+      return this.user.getName();
+    },
+    image () {
+      return this.user.getImage();
+    },
+    auth () {
+      return this.user.valid;
+    }
+  },
+
   mounted () {
-    this.$fireAuth.getRedirectResult().then((result) => {
-      console.log(result);
+    observer.subscribe((result) => {
+      this.user = result;
+      this.idle = false;
     });
   },
+
   methods: {
-    async createUser (e) {
+    createUser (e) {
       e.preventDefault();
-
-      try {
-
-        let test = await this.$fireAuth.signInWithRedirect(new firebase.auth.GoogleAuthProvider()).then(() => {
-          console.log('HUCH');
-        });
-        console.log(test);
-        // this.$fireAuth.GoogleAuthProvider();
-      } catch (e) {
-        alert(e);
+      this.idle = true;
+      if (this.auth) {
+        unauthorize().catch(console.error);
+      } else {
+        authorize().catch(console.error);
       }
     }
   }

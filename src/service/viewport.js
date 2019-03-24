@@ -1,25 +1,18 @@
-import { fromEvent, timer } from 'rxjs';
-import { map, debounce } from 'rxjs/operators';
+import { fromEvent, timer, combineLatest } from 'rxjs';
+import { map, debounce, startWith, share } from 'rxjs/operators';
+import { getScrollObserver } from './scroll';
+import verge from 'verge';
+import { Victor } from '@js-basics/vector';
 
-let x = 0;
-let y = 0;
-const w = global || {};
-const d = w.document || {};
-const e = d.documentElement;
-let g = null;
-if (e) {
-  g = d.getElementsByTagName('body')[0];
-}
+const resizeObserver = fromEvent(global, 'resize')
+  .pipe(
+    startWith(0),
+    debounce(() => timer(350)),
+    map(() => new Victor(verge.viewportW(), verge.viewportH())),
+    share()
+  );
 
-const observer = fromEvent(global, 'resize').pipe(
-  debounce(() => timer(350)),
-  map(() => {
-    x = w.innerWidth || e.clientWidth || g.clientWidth;
-    y = w.innerHeight || e.clientHeight || g.clientHeight;
-    return { x: x, y: y };
-  })
-);
-
-export function subscribeToViewport(fn) {
-  observer.subscribe(value => fn(value));
-}
+export const viewportObserver = combineLatest(resizeObserver, getScrollObserver())
+  .pipe(
+    share()
+  );

@@ -1,5 +1,8 @@
 <template>
-  <div class="autocomplete">
+  <elem-label
+    class="autocomplete"
+    :title="title"
+  >
     <input
       v-model="search"
       type="text"
@@ -25,12 +28,17 @@
         {{ convertToString(result) }}
       </li>
     </ul>
-  </div>
+  </elem-label>
 </template>
 
 <script>
+import ElemLabel from '@/components/atoms/Label';
 
 export default {
+  components: {
+    ElemLabel
+  },
+
   props: {
     max: {
       type: Number,
@@ -41,6 +49,12 @@ export default {
       type: Function,
       default: function () {
         return [];
+      }
+    },
+    title: {
+      type: String,
+      default () {
+        return 'title of autocomplete';
       }
     }
   },

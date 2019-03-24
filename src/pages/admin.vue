@@ -11,16 +11,30 @@
 
 <template>
   <div class="content">
-    <h1>ADMIN</h1>
-    <p>{{ $t('text') }}</p>
+    <infinite-list :repo="repo" />
+    <br>
+    <br><br><br><br><br><br><br><br><br><br><br>
   </div>
 </template>
 
 <script>
+import repo from '@/repo/demo';
+import InfiniteList from '@/components/molecules/InfiniteList';
+
 export default {
+  components: {
+    InfiniteList
+  },
+
   head () {
     return {
       title: 'title of page'
+    };
+  },
+
+  data () {
+    return {
+      repo: repo
     };
   }
 };

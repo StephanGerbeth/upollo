@@ -7,13 +7,18 @@
     [
       "@babel/preset-env",
       {
-        "useBuiltIns": "usage",
+        "useBuiltIns": "entry",
         "modules": false,
         "debug": false
       }
     ]
   ],
   "plugins": [
-    "@babel/plugin-transform-runtime"
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "useESModules": true
+      }
+    ]
   ]
 }

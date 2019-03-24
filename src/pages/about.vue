@@ -51,15 +51,17 @@
       src="~/assets/image0.png"
       alt="test"
     >
-    <img
-      src="~/assets/sample/1920x300.jpg"
+
+    <!-- <img
+      :src="require(`@/assets/${hurz}`)"
       alt="test"
-    >
+    > -->
   </div>
 </template>
 
 <script>
 import Headline from '~/components/atoms/Headline';
+
 
 export default {
   nuxtI18n: {
@@ -78,13 +80,8 @@ export default {
     };
   },
 
-  data () {
-    return {
-      msg: 'I will change'
-    };
-  },
-
   methods: {
+
     passing (value) {
       console.log('AHA', value.intersection.y, value.intersectionRatio);
     },

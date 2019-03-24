@@ -3,7 +3,7 @@
 const path = require('path');
 // const fs = require('fs');
 const opn = require('opn');
-const projectID = 'upollo-f0bf6';
+// const projectID = 'upollo-f0bf6';
 
 module.exports = {
   dev: process.env.NODE_ENV === 'development',
@@ -18,7 +18,10 @@ module.exports = {
       cacheDirectory: undefined
     },
     parallel: true,
-    transpile: []
+    transpile: [],
+    extend () {
+
+    }
   },
 
   generate: {
@@ -51,6 +54,7 @@ module.exports = {
   modules: [
     '@/modules/fix/image',
     '@/modules/virtual',
+    ['@/modules/virtual/Image', { test: 'BOOM' }],
     '@/modules/svg',
     '@/modules/webp',
     '@/modules/image',
@@ -80,27 +84,6 @@ module.exports = {
     }],
     ['nuxt-validate', {
       lang: 'de'
-    }],
-    ['nuxt-fire', {
-      useOnly: ['auth', 'realtimeDb'],
-      config: {
-        development: {
-          apiKey: 'AIzaSyBrKX_6Ikfe_37mSoPQ7VhWabdIaZSZUp0',
-          authDomain: `${projectID}.firebaseapp.com`,
-          databaseURL: `https://${projectID}.firebaseio.com`,
-          projectId: `${projectID}`,
-          storageBucket: `${projectID}.appspot.com`,
-          messagingSenderId: '999749012759'
-        },
-        production: {
-          apiKey: 'AIzaSyBrKX_6Ikfe_37mSoPQ7VhWabdIaZSZUp0',
-          authDomain: `${projectID}.firebaseapp.com`,
-          databaseURL: `https://${projectID}.firebaseio.com`,
-          projectId: `${projectID}`,
-          storageBucket: `${projectID}.appspot.com`,
-          messagingSenderId: '999749012759'
-        }
-      }
     }],
     ['@nuxtjs/pwa', {
       dev: process.env.NODE_ENV === 'development',

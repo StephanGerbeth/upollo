@@ -10,6 +10,7 @@
   "ignoreFiles": [
     "./**/*.js"
   ],
+  "ignoreProperties": [],
   "rules": {
     "no-empty-source": null,
     "rule-empty-line-before": [
@@ -20,6 +21,14 @@
         ],
         "ignore": [
           "after-comment"
+        ]
+      }
+    ],
+    "property-no-unknown": [
+      true,
+      {
+        "ignoreProperties": [
+          "grid-kiss"
         ]
       }
     ]

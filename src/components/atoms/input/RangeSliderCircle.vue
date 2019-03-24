@@ -12,10 +12,7 @@
         @pointerdown="onStart"
       />
     </div>
-    <input-number
-      class="value"
-      :value="currentValue"
-    />
+    <input-number :value="currentValue" />
   </div>
 </template>
 
@@ -39,13 +36,9 @@ export default {
       type: Number,
       default: 100
     },
-    maxRad: {
+    circumference: {
       type: Number,
       default: Math.PI * 2
-    },
-    rotation: {
-      type: Number,
-      default: Math.PI / 2
     }
   },
 
@@ -61,7 +54,10 @@ export default {
 
   computed: {
     currentValue () {
-      return Math.round(this.min + (this.max - this.min) * this.progress.current);
+      return Math.round(this.min + (this.max - this.min) * this.progress.current / this.circumferenceFactor);
+    },
+    circumferenceFactor () {
+      return this.circumference / (Math.PI * 2);
     }
   },
 
@@ -71,14 +67,16 @@ export default {
     },
     onTick (e) {
       if (this.active) {
-        const vector = calcNormalizedPointerPosition(e, this.$el.getBoundingClientRect());
+        const normVector = calcNormalizedLocalPointerVector(e, this.$el.getBoundingClientRect());
+        const elemRad = getRotation(window.getComputedStyle(this.$el).transform);
+        const vector = rotateVectorByRad(normVector, -elemRad);
         const rad = calcRad(vector);
-        const radNormalized = rad / (this.maxRad);
 
-        if (Math.abs(radNormalized - this.progress.current) < 0.5 && Math.abs(radNormalized) < 1) {
+        const radNormalized = rad / (this.circumference);
+        if (Math.abs(radNormalized - this.progress.current) < 0.5) {
           this.progress.before = this.progress.current;
-          this.progress.current = radNormalized * (this.maxRad / (Math.PI * 2));
-          this.$el.style.setProperty('--rad', rad);
+          this.progress.current = clamp(radNormalized) * this.circumferenceFactor;
+          this.$el.style.setProperty('--rad', clamp(rad, this.circumference));
         }
       }
     },
@@ -88,16 +86,32 @@ export default {
   }
 };
 
-function calcNormalizedPointerPosition (e, boundingClientRect) {
+function calcNormalizedLocalPointerVector (e, boundingClientRect) {
   const { x, y, width, height } = boundingClientRect;
   const elemPos = new Victor(x, y);
-  const elemSize = new Victor(() => new Victor(width, height) / 2);
+  const elemHalfSize = new Victor(() => new Victor(width, height) / 2);
   const touchPos = new Victor(e.x, e.y);
-  return new Victor(() => (touchPos - elemPos - elemSize) / elemSize);
+  return new Victor(() => (touchPos - elemPos - elemHalfSize) / elemHalfSize);
 }
 
 function calcRad (vector) {
   return Math.atan2(vector.y, vector.x) + Math.PI;
+}
+
+// source: https://matthew-brett.github.io/teaching/rotation_2d.html
+function rotateVectorByRad (vector, rad) {
+  const x = Math.cos(rad) * vector.x - Math.sin(rad) * vector.y;
+  const y = Math.sin(rad) * vector.x + Math.cos(rad) * vector.y;
+  return new Victor(x, y);
+}
+
+function clamp (value, min = 1) {
+  return Math.min(min, value);
+}
+
+function getRotation (matrix) {
+  let m = new DOMMatrix(matrix);
+  return Math.atan2(m.b, m.a);
 }
 </script>
 
@@ -114,22 +128,10 @@ function calcRad (vector) {
   position: relative;
   padding: var(--padding);
   overflow: hidden;
-
-  /* transform: rotate(90deg); */
+  transform: rotate(90deg);
 
   & svg {
-    /* width: 80%; */
-  }
-
-  & input.value {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    width: 20em;
-    height: 5em;
-    margin: auto;
+    width: 100%;
   }
 
   & .handle {
@@ -151,6 +153,13 @@ function calcRad (vector) {
       border-radius: 50%;
       transform: translateY(-50%);
     }
+  }
+
+  & label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-90deg);
   }
 }
 </style>

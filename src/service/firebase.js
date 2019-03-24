@@ -1,37 +1,35 @@
-import app from 'firebase/app';
+import loadScript from '../utils/script';
 
-export function airports (search, max) {
-  return app.apps[0].database()
-    .ref('airports')
-    .orderByChild('ident')
-    .startAt(search)
-    .endAt(search + '\uf8ff')
-    .limitToLast(max)
-    .once('value').then((snapshot) => {
-      const result = snapshot.val() || [];
-      return Object.keys(result).map((key) => {
-        return {
-          id: result[key].ident,
-          name: result[key].name
-        };
-      });
-    });
+const serviceUrlPattern = 'https://www.gstatic.com/firebasejs/5.8.6/firebase-${service}.js';
+const projectID = 'upollo-f0bf6';
+const config = {
+  apiKey: 'AIzaSyBrKX_6Ikfe_37mSoPQ7VhWabdIaZSZUp0',
+  authDomain: `${projectID}.firebaseapp.com`,
+  databaseURL: `https://${projectID}.firebaseio.com`,
+  projectId: `${projectID}`,
+  storageBucket: `${projectID}.appspot.com`,
+  messagingSenderId: '999749012759'
+};
+const services = new Map();
+
+export function getFirebaseService (service) {
+  return getService('app').then(() => {
+    return getService(service);
+  });
 }
 
-export function aircrafts (search, max) {
-  return app.apps[0].database()
-    .ref('aircrafts')
-    .orderByChild('registration')
-    .startAt(search)
-    .endAt(search + '\uf8ff')
-    .limitToLast(max)
-    .once('value').then((snapshot) => {
-      const result = snapshot.val() || [];
-      return Object.keys(result).map((key) => {
-        return {
-          id: result[key].registration,
-          name: `${result[key].model} | ${result[key].owner}`
-        };
-      });
-    });
+function getService (service) {
+  if (!services.has(service)) {
+    services.set(service, loadService(service).then(() => {
+      if (!global.firebase.apps.length) {
+        global.firebase.initializeApp(config);
+      }
+      return global.firebase[service];
+    }));
+  }
+  return services.get(service);
+}
+
+function loadService (service) {
+  return loadScript(new Function('service', 'return `' + serviceUrlPattern + '`;')(service));
 }
