@@ -1,6 +1,6 @@
 <template>
   <ul>
-    <item
+    <infinite-item
       v-for="(item, index) in entries"
       :key="index"
       :repo="repo"
@@ -12,13 +12,13 @@
 </template>
 
 <script>
-import Item from '@/components/atoms/list/Item';
+import InfiniteItem from '@/components/atoms/list/InfiniteItem';
 import { viewportObserver } from '@/service/viewport';
 import { Victor } from '@js-basics/vector';
 
 export default {
   components: {
-    Item
+    InfiniteItem
   },
 
   props: {
