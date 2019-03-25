@@ -11,7 +11,7 @@ export default {
     if (!total) {
       total = new Promise((resolve) => {
         // setTimeout(() => {
-        resolve(47);
+        resolve(50000);
         // }, 3000);
 
       });

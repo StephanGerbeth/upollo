@@ -11,7 +11,10 @@
 
 <template>
   <div class="content">
-    <infinite-list :repo="repo" />
+    <infinite-list
+      :repo="repo"
+      :max-siblings="15"
+    />
     <br>
     <br><br><br><br><br><br><br><br><br><br><br>
   </div>

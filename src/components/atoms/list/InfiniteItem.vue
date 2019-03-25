@@ -108,6 +108,7 @@ function getRelativeOffset (index, relativeIndex, maxSiblings, offset, total) {
 li {
   --offset: 0;
 
+  height: 5em;
   transform: translateY(calc(var(--offset) * 100%));
 }
 </style>
