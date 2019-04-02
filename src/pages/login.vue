@@ -41,6 +41,7 @@ import InputSwitch from '@/components/atoms/input/Switch';
 import RangeSliderCircle from '@/components/atoms/input/RangeSliderCircle';
 import Geolocation from '@/components/atoms/input/Geolocation';
 import JumpingOffPoint from '@/components/molecules/JumpingOffPoint';
+import TileWall from '@/components/molecules/TileWall';
 
 
 export default {
@@ -52,6 +53,7 @@ export default {
     RangeSliderCircle,
     Geolocation,
     JumpingOffPoint,
+    TileWall
   },
   head () {
     return {
