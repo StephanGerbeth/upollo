@@ -4,7 +4,7 @@
       v-for="(item, index) in entries"
       :key="index"
       :repo="repo"
-      :max-siblings="maxSiblings"
+      :max="max"
       :current-index="currentIndex"
       @onIntersectionUpdate="onIntersectionUpdate"
     />
@@ -14,6 +14,8 @@
 <script>
 import InfiniteItem from '@/components/atoms/list/InfiniteItem';
 import { viewportObserver } from '@/service/viewport';
+import { resizeObserver } from '@/service/window';
+import { getBounds } from '@/utils/element';
 import { Victor } from '@js-basics/vector';
 
 export default {
@@ -22,12 +24,6 @@ export default {
   },
 
   props: {
-    maxSiblings: {
-      type: Number,
-      default () {
-        return 10;
-      },
-    },
     repo: {
       type: Object,
       default () {
@@ -38,7 +34,8 @@ export default {
 
   data () {
     return {
-      entries: Array.from(Array(this.maxSiblings)),
+      entries: Array.from(Array(1)),
+      max: new Victor(1, 1),
       currentSibling: null,
       lastSibling: null,
       currentIndex: 0
@@ -48,16 +45,23 @@ export default {
   mounted () {
     // the total count is essential to detect the right end of the list
     this.repo.total().then(() => {
+      resizeObserver.subscribe((viewport) => {
+        console.log('RESIZE');
+        this.max = getMaxSiblings(this.$el, viewport);
+        this.entries = Array.from(Array(this.max.x * this.max.y));
+        this.$nextTick(this.updateCurrentIndex);
+      });
+
       viewportObserver.subscribe(() => {
         this.$nextTick(this.updateCurrentIndex);
       });
-      this.$nextTick(this.updateCurrentIndex);
     });
   },
 
   methods: {
     updateCurrentIndex () {
       if (this.currentSibling) {
+        console.log('UPDATE');
         // publish the new current index to all list elements
         this.currentIndex = this.currentSibling.num;
       }
@@ -72,6 +76,7 @@ export default {
     },
 
     onIntersectionUpdate (e) {
+      console.log('INTERSECTION UPDATE');
       // check if the element is nearest one to the viewport center
       if (!this.currentSibling || Math.abs(e.intersection.y) < Math.abs(this.currentSibling.intersection.y)) {
         this.currentSibling = e;
@@ -83,6 +88,19 @@ export default {
     }
   }
 };
+
+function getMaxSiblings (el, viewport) {
+  const child = getBounds(el.firstChild);
+  const parent = getBounds(el);
+
+  const dimensionChild = new Victor(child.width, child.height, 1);
+  // use the y-dimension of the viewport for scrolling on y-axis
+  const dimensionParent = new Victor(parent.width, viewport.y, 1);
+  // round the float numbers of rows and columns to an integer value
+  const max = new Victor(() => Math.round(dimensionParent / dimensionChild * 1e0) / 1e0);
+  // the number of rows must be odd
+  return new Victor(max.x, max.y + (1 + -max.y % 2), 0);
+}
 </script>
 
 <style lang="postcss" scoped>
@@ -90,6 +108,7 @@ ul {
   --height: 0;
 
   position: relative;
+  width: 100%;
   height: calc(var(--height) * 1px);
   padding: 0;
   margin: 0;
