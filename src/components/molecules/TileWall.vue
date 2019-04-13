@@ -3,6 +3,8 @@
     <item
       v-for="(items, index) in entries"
       :key="index"
+      :name="$vnode.tag"
+      :model="model"
     />
   </ul>
 </template>
@@ -17,8 +19,15 @@ export default {
 
   data () {
     return {
-      entries: Array.from(Array(20))
+      entries: Array.from(Array(20)),
+      model: {
+        checked: ''
+      }
     };
+  },
+
+  mounted () {
+    console.log(this);
   }
 };
 </script>

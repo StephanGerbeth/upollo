@@ -4,12 +4,19 @@
 
 <script>
 import { viewportObserver } from '@/service/viewport';
+import { resizeObserver } from '@/service/window';
 import { getPositionInViewport, getPositionInParentElement, getDimension } from '@/utils/element';
 import { Victor } from '@js-basics/vector';
 
 export default {
   props: {
     currentIndex: {
+      type: Number,
+      default () {
+        return 0;
+      }
+    },
+    currentOffset: {
       type: Number,
       default () {
         return 0;
@@ -55,14 +62,17 @@ export default {
       handler (value) {
         // calc own relative index from current index (-x < currentIndex > +x)
         const relativeIndex = this.num - value;
+        console.log('AHA', this.num, relativeIndex);
         this.repo.total().then((total) => {
           // calc own offset to place element on right position
           this.offset = this.offset + getRelativeOffset(this.num, relativeIndex, this.max, this.offset, total);
 
+          // console.log('HURZ', this.offset, this.max.x, this.max.y);
           // set offset by css variable
           this.$el.style.setProperty('--offset', this.offset * this.max.y);
         });
-      }
+      },
+      immediate: true
     },
 
     num: {
@@ -77,20 +87,25 @@ export default {
   },
 
   mounted () {
-    this.subscriber = viewportObserver.subscribe(([dimension]) => {
-      // if (intersects(this.$el)) {
+    console.log('MOUNTED', this.currentOffset);
+    // this.offset = this.currentOffset;
+    this.viewportSubscriber = viewportObserver.subscribe(([dimension]) => {
       this.dimension = getDimension(this.$el);
       this.position.inViewport = getPositionInViewport(this.$el);
       this.position.inParent = getPositionInParentElement(this.$el);
 
       this.intersection = new Victor(() => (this.position.inViewport + this.dimension) / (dimension + this.dimension) * 2 - 1);
       this.$emit('onIntersectionUpdate', this);
-      // }
+    });
+
+    this.resizeSubscriber = resizeObserver.subscribe(() => {
+      this.offset = this.currentOffset;
     });
   },
 
   destroyed () {
-    this.subscriber.unsubscribe();
+    this.viewportSubscriber.unsubscribe();
+    this.resizeSubscriber.unsubscribe();
   }
 };
 
@@ -101,10 +116,6 @@ function getRelativeOffset (index, relativeIndex, max, offset, total) {
   const halfOfSiblings = siblings / 2;
   const offsetBefore = halfOfSiblings + max.x - 1;
   const offsetAfter = -halfOfSiblings;
-
-  // const halfOfMaxSiblings = maxSiblings / 2;
-  // const offsetBefore = halfOfMaxSiblings + itemsInRow + 2;
-  // const offsetAfter = -halfOfMaxSiblings + 2;
 
   // check if the balance of the number of elements before and after the current element in the viewport center is disturbed
   if (relativeIndex < offsetAfter && (index + siblings) < total) {

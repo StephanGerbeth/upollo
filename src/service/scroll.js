@@ -14,11 +14,15 @@ export function getScrollObserver (el = global) {
     .pipe(
       startWith(0),
       map(() => {
-        return new Victor(
-          el.scrollLeft || global.pageXOffset || global.document.documentElement.scrollLeft,
-          el.scrollTop || global.pageYOffset || global.document.documentElement.scrollTop,
-        );
+        return getScrollPos(el);
       }),
       share()
     );
+}
+
+export function getScrollPos (el = global) {
+  return new Victor(
+    el.scrollLeft || global.pageXOffset || global.document.documentElement.scrollLeft,
+    el.scrollTop || global.pageYOffset || global.document.documentElement.scrollTop,
+  );
 }

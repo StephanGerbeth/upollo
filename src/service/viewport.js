@@ -4,5 +4,8 @@ import { resizeObserver, scrollObserver } from './window';
 
 export const viewportObserver = combineLatest(resizeObserver, scrollObserver)
   .pipe(
-    shareReplay()
+    shareReplay({
+      refCount: true,
+      bufferSize: 1
+    })
   );

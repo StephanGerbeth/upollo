@@ -13,8 +13,8 @@
 
 <script>
 import InfiniteItem from '@/components/atoms/list/InfiniteItem';
-import { viewportObserver } from '@/service/viewport';
-import { resizeObserver } from '@/service/window';
+// import { viewportObserver } from '@/service/viewport';
+import { resizeObserver, scrollObserver } from '@/service/window';
 import { getBounds } from '@/utils/element';
 import { Victor } from '@js-basics/vector';
 
@@ -46,14 +46,18 @@ export default {
     // the total count is essential to detect the right end of the list
     this.repo.total().then(() => {
       resizeObserver.subscribe((viewport) => {
-        console.log('RESIZE');
+        // console.log('RESIZE');
         this.max = getMaxSiblings(this.$el, viewport);
+
         this.entries = Array.from(Array(this.max.x * this.max.y));
-        this.$nextTick(this.updateCurrentIndex);
+        this.$nextTick(() => this.updateCurrentIndex(true));
+
+        // this.$el.scrollIntoView({ block: 'start', behavior: 'auto' });
       });
 
-      viewportObserver.subscribe(() => {
-        this.$nextTick(this.updateCurrentIndex);
+      scrollObserver.subscribe(() => {
+        // console.log('VIEWPORT');
+        this.$nextTick(() => this.updateCurrentIndex(false));
       });
     });
   },
@@ -61,7 +65,7 @@ export default {
   methods: {
     updateCurrentIndex () {
       if (this.currentSibling) {
-        console.log('UPDATE');
+        // console.log('UPDATE', this.currentSibling.num, this.currentSibling.num / this.max.x);
         // publish the new current index to all list elements
         this.currentIndex = this.currentSibling.num;
       }
@@ -76,7 +80,7 @@ export default {
     },
 
     onIntersectionUpdate (e) {
-      console.log('INTERSECTION UPDATE');
+      // console.log('INTERSECTION UPDATE', e.index);
       // check if the element is nearest one to the viewport center
       if (!this.currentSibling || Math.abs(e.intersection.y) < Math.abs(this.currentSibling.intersection.y)) {
         this.currentSibling = e;
